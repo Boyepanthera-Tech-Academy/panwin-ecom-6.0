@@ -1,0 +1,23 @@
+{
+  "name": "panwine-ecom-6.0",
+  "version": "1.1.1",
+  "description": "Wine purchase app",
+  "main": "api.js",
+  "author": "Olanrewaju A. Olaboye",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon api.js",
+    "start": "node api.js"
+  },
+  "private": false,
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "joi": "^17.7.0",
+    "mongoose": "^6.7.4"
+  }
+}
