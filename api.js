@@ -1,6 +1,9 @@
 const express = require("express");
 const api = express();
-const { indexController } = require("./controllers");
+const { indexController, authController } = require("./controllers");
+const {
+  validateSignupMiddleware,
+} = require("./models/validators/auth.validator");
 const { AppStarter } = require("./utils");
 const port = 6001;
 
@@ -13,5 +16,7 @@ api.use(
 );
 
 api.get("/", indexController);
+
+api.post("/signup", validateSignupMiddleware, authController.SignupController);
 
 api.listen(port, AppStarter(port));

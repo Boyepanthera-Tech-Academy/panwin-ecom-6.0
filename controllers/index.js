@@ -1,3 +1,5 @@
+const authController = require("./auth.controller");
+
 const indexController = (req, res) => {
   return res
     .status(200)
@@ -6,4 +8,5 @@ const indexController = (req, res) => {
 
 module.exports = {
   indexController,
+  authController,
 };
