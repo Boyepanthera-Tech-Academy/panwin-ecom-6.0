@@ -17,6 +17,6 @@ api.use(
 
 api.get("/", indexController);
 
-api.post("/signup", validateSignupMiddleware, authController.SignupController);
+api.post("/signup", authController.SignupController);
 
 api.listen(port, AppStarter(port));
