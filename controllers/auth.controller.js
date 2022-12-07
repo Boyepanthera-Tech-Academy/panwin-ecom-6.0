@@ -1,13 +1,9 @@
 const bcrypt = require("bcryptjs");
+const JWT = require("jsonwebtoken");
 const { User } = require("../models");
-const { validateSignupData } = require("../models/validators/auth.validator");
 
 const SignupController = async (req, res) => {
   try {
-    const { err } = validateSignupData(req.body);
-    if (err) {
-      return res.status(400).json(err);
-    }
     //Check if a user already exist with same username or email
     let userExist = await User.findOne({
       $or: [{ email: req.body.email }, { username: req.body.username }],
@@ -24,12 +20,36 @@ const SignupController = async (req, res) => {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(req.body.password, salt);
     req.body.password = hash;
-    const user = await User.create(req.body);
-
+    const user = new User(req.body);
+    const token = JWT.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+      },
+      process.env.JWT_SECRET,
+      {
+        issuer: "http://localhost:6001",
+        expiresIn: "6h",
+      }
+    );
+    await user.save();
     return res.status(201).json({
       message: "account created",
       user,
+      token,
     });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      message: "internal server issues",
+    });
+  }
+};
+
+const LoginController = (req, res) => {
+  try {
+    res.send("ok");
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -40,4 +60,5 @@ const SignupController = async (req, res) => {
 
 module.exports = {
   SignupController,
+  LoginController,
 };
