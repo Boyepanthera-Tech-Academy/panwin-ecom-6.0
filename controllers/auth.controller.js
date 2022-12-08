@@ -16,27 +16,18 @@ const SignupController = async (req, res) => {
         message: "Account exist, login instead",
       });
     }
-
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(req.body.password, salt);
-    req.body.password = hash;
     const user = new User(req.body);
-    const token = JWT.sign(
-      {
-        _id: user._id,
-        email: user.email,
-        username: user.username,
-      },
-      process.env.JWT_SECRET,
-      {
-        issuer: "http://localhost:6001",
-        expiresIn: "6h",
-      }
-    );
+    const token = user.generateToken();
     await user.save();
     return res.status(201).json({
       message: "account created",
-      user,
+      user: {
+        _id: user._id,
+        email: user.email,
+        phone: user.phone,
+        username: user.username,
+        fullName: user.fullName,
+      },
       token,
     });
   } catch (err) {
@@ -47,11 +38,45 @@ const SignupController = async (req, res) => {
   }
 };
 
-const LoginController = (req, res) => {
+const LoginController = async (req, res) => {
   try {
-    res.send("ok");
+    // Make a call to the db to check if user exist
+    let userExist = await User.findOne({
+      $or: [{ email: req.body.email }, { username: req.body.username }],
+    });
+
+    // Return error to client if user has no account
+    if (!userExist) {
+      return res.status(404).json({
+        message: "You have no account. signup instead",
+      });
+    }
+
+    //Check if the password is authentic
+    const passwordCorrect = userExist.checkPassword(req.body.password);
+
+    if (!passwordCorrect) {
+      return res.status(400).json({
+        message: "incorrect password",
+      });
+    }
+
+    // generate token
+    const token = userExist.generateToken();
+
+    // send token and user data to client
+    return res.status(200).json({
+      message: "login successful",
+      token,
+      user: {
+        _id: userExist._id,
+        fullName: userExist.fullName,
+        email: userExist.email,
+        phone: userExist.phone,
+        username: userExist.username,
+      },
+    });
   } catch (err) {
-    console.log(err);
     return res.status(500).json({
       message: "internal server issues",
     });
