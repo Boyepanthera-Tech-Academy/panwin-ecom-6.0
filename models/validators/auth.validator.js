@@ -14,6 +14,11 @@ const loginSchema = Joi.object({
   password: Joi.string().min(8).required(),
 }).or("email", "username");
 
+const passwordChangeSchema = Joi.object({
+  oldPassword: Joi.string().min(8).required(),
+  password: Joi.string().min(8).required(),
+});
+
 const validateSignupData = (data) => {
   let { error: err, value } = signupSchema.validate(data);
   return { err, value };
@@ -50,11 +55,27 @@ const validateLoginMiddleware = (req, res, next) => {
     });
   }
 };
+const validatePasswordChangeMiddleware = (req, res, next) => {
+  try {
+    let { error, value } = passwordChangeSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        message: error,
+      });
+    }
+    next();
+  } catch (err) {
+    return res.status(500).json({
+      message: "server issues",
+    });
+  }
+};
 
 module.exports = {
   validateSignupData,
   validateSignupMiddleware,
   validateLoginMiddleware,
+  validatePasswordChangeMiddleware,
 };
 
 // module.exports.validateSignupData = validateSignupData;

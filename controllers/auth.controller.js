@@ -1,5 +1,5 @@
-const bcrypt = require("bcryptjs");
-const JWT = require("jsonwebtoken");
+const ejs = require("ejs");
+const path = require("path");
 const { User } = require("../models");
 
 const SignupController = async (req, res) => {
@@ -83,7 +83,55 @@ const LoginController = async (req, res) => {
   }
 };
 
+const ChangePasswordController = async (req, res, next) => {
+  try {
+    //get request body
+    const { password, oldPassword } = req.body;
+
+    // Find user with id inside of token
+    const user = await User.findById(req.user._id);
+
+    //Verify the old password
+    let passwordCorrect = user.checkPassword(oldPassword);
+    if (!passwordCorrect)
+      return res.status(400).json({
+        message: "incorrect password",
+      });
+
+    // Set the password key
+    user.password = password;
+
+    //Call the modelInstance .save() method
+    user.save();
+    return res.status(200).json({
+      message: "password changed successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "internal server issues",
+    });
+  }
+};
+
+const RequestPasswordResetController = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "email is required" });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "user not found" });
+    const templatePath = path.join(process.cwd(), "/views/index.ejs");
+    console.log("template path", templatePath);
+    res.send("ok");
+    // const body = await ejs.renderFile(__dirname + "/views/index.ejs");
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json("server issues");
+  }
+};
+
 module.exports = {
   SignupController,
   LoginController,
+  ChangePasswordController,
+  RequestPasswordResetController,
 };
