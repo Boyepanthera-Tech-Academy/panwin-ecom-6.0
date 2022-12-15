@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     email: String,
     phone: String,
     password: String,
+    resetToken: String,
     isAdmin: {
       type: Boolean,
       default: false,
