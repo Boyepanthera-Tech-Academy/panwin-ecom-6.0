@@ -122,14 +122,12 @@ const RequestPasswordResetController = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "user not found" });
     const templatePath = path.join(process.cwd(), "/views/index.ejs");
-    console.log("template path", templatePath);
     let resetToken = crypto.randomBytes(24).toString("hex");
-    console.log("resetToken", resetToken);
     user.resetToken = resetToken;
     await user.save();
     const url = process.env.FRONTEND_URL + "/password-reset/" + resetToken;
     const body = await ejs.renderFile(templatePath, { user, url });
-    console.log("body", body);
+    // console.log("body", body);
     await SendEmail({
       receiver: user.email,
       subject: "Panwine Password Reset",

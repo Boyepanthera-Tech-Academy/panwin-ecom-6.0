@@ -30,6 +30,7 @@ userSchema.method("generateToken", function () {
       _id: this._id,
       email: this.email,
       username: this.username,
+      isAdmin: this.isAdmin,
     },
     process.env.JWT_SECRET,
     {

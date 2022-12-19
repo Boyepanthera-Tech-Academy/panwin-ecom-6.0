@@ -1,9 +1,11 @@
 const express = require("express");
+const { appendFile } = require("fs");
 const api = express();
 const path = require("path");
 const {
   indexController,
   authController,
+  categoryController,
   middlewares,
 } = require("./controllers");
 const {
@@ -37,5 +39,15 @@ api.put(
 );
 
 api.post("/forgot-password", authController.RequestPasswordResetController);
+
+api.get("/category", categoryController.FetchAll);
+api.post("/category", middlewares.checkIfAdmin, categoryController.Create);
+api.get("/category/:id", categoryController.FetchById);
+api.put("/category/:id", middlewares.checkIfAdmin, categoryController.Update);
+api.delete(
+  "/category/:id",
+  middlewares.checkIfAdmin,
+  categoryController.Delete
+);
 
 api.listen(port, AppStarter(port));

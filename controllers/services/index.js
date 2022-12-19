@@ -4,19 +4,16 @@ dotenv.config();
 sgMail.setApiKey(process.env.SENDGRID_KEY);
 
 const SendEmail = (data) => {
-  console.log(data.receiver);
-  console.log(data.subject);
-  console.log(process.env.SENDGRID_SENDER);
   const msg = {
     to: data.receiver, // Change to your recipient
     from: process.env.SENDGRID_SENDER, // Change to your verified sender
     subject: data.subject,
-    html: "hello from the password reset app",
+    html: data.body,
   };
   return sgMail
     .send(msg)
-    .then(() => {
-      console.log("Email sent");
+    .then((data) => {
+      console.log("Email sent", data);
       return true;
     })
     .catch((error) => {
