@@ -7,12 +7,17 @@ const {
   authController,
   categoryController,
   middlewares,
+  productController,
 } = require("./controllers");
 const {
   validateSignupMiddleware,
   validateLoginMiddleware,
   validatePasswordChangeMiddleware,
 } = require("./models/validators/auth.validator");
+const {
+  validateProductMiddleware,
+  validateProductUpdateMiddleware,
+} = require("./models/validators/product.validator");
 const { AppStarter } = require("./utils");
 const port = 6001;
 
@@ -49,5 +54,21 @@ api.delete(
   middlewares.checkIfAdmin,
   categoryController.Delete
 );
+
+api.get("/product", productController.FetchAll);
+api.post(
+  "/product",
+  middlewares.checkIfAdmin,
+  validateProductMiddleware,
+  productController.Create
+);
+api.get("/product/:id", productController.FetchById);
+api.put(
+  "/product/:id",
+  middlewares.checkIfAdmin,
+  validateProductUpdateMiddleware,
+  productController.Update
+);
+api.delete("/product/:id", middlewares.checkIfAdmin, productController.Delete);
 
 api.listen(port, AppStarter(port));

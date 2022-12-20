@@ -1,15 +1,11 @@
-const { Category } = require("../models");
+const { Product } = require("../models");
 
 const Create = async (req, res) => {
   try {
-    if (!req.body.name)
-      return res.status(400).json({
-        message: "name is required",
-      });
-    let category = await Category.create(req.body);
+    let product = await Product.create(req.body);
     return res.status(201).json({
-      message: "category created",
-      data: category,
+      message: "product created",
+      data: product,
     });
   } catch (err) {
     console.log(err);
@@ -19,27 +15,28 @@ const Create = async (req, res) => {
 
 const FetchById = async (req, res) => {
   try {
-    let category = await Category.findById(req.params.id);
-    if (!category) {
+    let product = await Product.findById(req.params.id).populate("category");
+    if (!product) {
       return res.status(404).json({
-        message: "Category not found",
+        message: "Product not found",
       });
     }
     return res.status(200).json({
-      message: "Category fetched",
-      data: category,
+      message: "product fetched",
+      data: product,
     });
   } catch (err) {
     console.log(err);
     return res.status(500).json("server issues");
   }
 };
+
 const FetchAll = async (req, res) => {
   try {
-    let categories = await Category.find({});
+    let products = await Product.find({}).populate("category");
     return res.status(200).json({
-      message: "Categories fetched",
-      data: categories,
+      message: "Products fetched",
+      data: products,
     });
   } catch (err) {
     console.log(err);
@@ -49,13 +46,10 @@ const FetchAll = async (req, res) => {
 
 const Update = async (req, res) => {
   try {
-    if (!req.body.name) {
-      return res.status(400).json({ message: "name is required" });
-    }
-    let category = await Category.findById(req.params.id);
-    await category.updateOne(req.body);
+    let product = await Product.findById(req.params.id);
+    await product.updateOne(req.body);
     return res.status(200).json({
-      message: "Category updated",
+      message: "product updated",
     });
   } catch (err) {
     console.log(err);
@@ -65,13 +59,13 @@ const Update = async (req, res) => {
 
 const Delete = async (req, res) => {
   try {
-    let category = await Category.findByIdAndDelete(req.params.id);
-    if (!category)
+    let product = await Product.findByIdAndDelete(req.params.id);
+    if (!product)
       return res
         .status(404)
-        .json({ message: "cannot delete a none existent category" });
+        .json({ message: "cannot delete a none existent  product" });
     return res.status(200).json({
-      message: "Category deleted",
+      message: "Product deleted",
     });
   } catch (err) {
     console.log(err);

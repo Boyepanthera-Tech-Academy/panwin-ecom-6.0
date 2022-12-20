@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
-    name: String,
+    name: { type: String, required: true, unique: true },
     price: Number,
     category: {
       type: mongoose.Types.ObjectId,
@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    stock: Number,
+    stock: { type: Number, default: 1 },
   },
   { timestamps: true }
 );
