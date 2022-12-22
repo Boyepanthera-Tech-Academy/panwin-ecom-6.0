@@ -1,6 +1,6 @@
 {
   "development": {
-    "username": "root",
+    "username": "postgres",
     "password": "root",
     "database": "panwine-6",
     "host": "127.0.0.1",
